@@ -1,0 +1,149 @@
+<?php
+session_start();
+
+// Cek apakah pengguna telah login
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+// Lanjutkan dengan tampilan halaman menu jika pengguna telah login
+?>
+<?php
+require 'functions.php';
+
+//ambil data di url
+$id = $_GET["id"];
+//query data mahasiswa
+$brg = query("SELECT * FROM barang WHERE id_barang=$id")[0];
+
+
+
+if (isset($_POST["submit"])) {
+
+    if (ubahBarang($_POST) > 0) {
+        echo "<script>
+                alert('data berhasil diubah !');
+                document.location.href = 'barang.php';
+         </script>";
+    } else {
+        echo "<script>
+    alert('data gagal diubah !');
+    document.location.href = 'barang.php';
+</script>";
+    }
+}
+
+$query = "SELECT * FROM supplier";
+$result = mysqli_query($conn, $query);
+
+// Inisialisasi array untuk menyimpan data supplier
+$suppliers = [];
+
+while ($row = mysqli_fetch_assoc($result)) {
+    $suppliers[] = $row;
+}
+//
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SB Admin 2 - Register</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-sm-4">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Ubah Data Barang</h1>
+                            </div>
+                            <form class="user" method="post" action="">
+                                <input type="hidden" name="id_barang" value="<?= $brg["id_barang"]; ?>">
+                                <div class="form-group">
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control form-control-user" id="nama_barang"
+                                            name="nama_barang" placeholder="Nama Barang"
+                                            value="<?= $brg["nama_barang"]; ?>">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="number" min=0 class="form-control form-control-user" id="harga"
+                                        name="harga" placeholder="Harga" value="<?= $brg["harga"]; ?>">
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="number" min=0 class="form-control form-control-user" id="stok"
+                                        name="stok" placeholder="Stock" value="<?= $brg["stok"]; ?>">
+                                </div>
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" for="id_supplier">Supplier</label>
+                                    </div>
+                                    <select class="custom-select" id="id_supplier" name="id_supplier">
+                                        <?php foreach ($suppliers as $supplier): ?>
+                                            <option value="<?= $supplier['id_supplier']; ?>" <?php echo ($supplier['id_supplier'] == $brg['id_supplier']) ? 'selected' : ''; ?>>
+                                                <?= $supplier['nama_supplier']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+
+                                <button type="submit" name="submit" class="btn btn-primary btn-user btn-block">
+                                    Ubah Barang
+                                </button>
+
+                                <a href="barang.php" class="btn btn-danger btn-user btn-block">
+                                    Cancel
+                                </a>
+                            </form>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>
